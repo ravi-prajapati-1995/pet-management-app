@@ -1,21 +1,29 @@
 package org.pet.management.edit;
 
 import org.pet.management.common.CompositeVerifier;
+import org.pet.management.dto.request.PetUpdateDto;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static org.pet.management.common.MyInputVerifier.*;
-import static org.pet.management.petlist.PetListFrame.getPetDetails;
+import static org.pet.management.pet.PetListFrame.getPetDetails;
+import static org.pet.management.pet.PetListFrame.updatePetDetails;
+import static org.pet.management.util.PetAppClient.getClient;
 
 public class EditPetInfoDialog extends JDialog {
     private final JTextField petNameField;
     private final JTextField ageField;
+    private final int petId;
 
     public EditPetInfoDialog(JFrame parent, final int petId) {
         super(parent, "Edit Pet Details", true); // modal dialog
-
+        this.petId = petId;
         final var petDetailsDTO = getPetDetails(petId);
 
         setSize(400, 300);
@@ -29,36 +37,46 @@ public class EditPetInfoDialog extends JDialog {
         petNameField = new JTextField(petDetailsDTO.getName());
         petNameField.setName("Pet Name");
         panel.add(petNameField);
-        petNameField.setInputVerifier(new CompositeVerifier(getNotEmpty()));
+        petNameField.setInputVerifier(new CompositeVerifier(getNotEmpty(), getValidNameLength()));
 
-        panel.add(new JLabel("Age:"));
+        panel.add(new JLabel("Age (In years):"));
         ageField = new JTextField(String.valueOf(petDetailsDTO.getAge()));
         ageField.setName("Age");
-        ageField.setInputVerifier(new CompositeVerifier(getNotEmpty(), getNumberOnly()));
+        ageField.setInputVerifier(new CompositeVerifier(getNotEmpty(), getNumberOnly(), getValidateMaxAge()));
 
         panel.add(ageField);
 
         final JButton saveButton = new JButton("Save");
         panel.add(new JLabel()); // empty label for spacing
         panel.add(saveButton);
-
         add(panel);
 
-        saveButton.addActionListener(e -> saveData());
+        saveButton.addActionListener(e -> updateData());
 
-        // Focus petNameField on open
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent e) {
+        addWindowListener(new WindowAdapter() {
+            public void windowOpened(final WindowEvent e) {
                 petNameField.requestFocusInWindow();
             }
         });
     }
 
-    private void saveData() {
-        final String petName = petNameField.getText();
-        ageField.getInputVerifier().verify(ageField);
-        final int age = Integer.parseInt(ageField.getText());
-        JOptionPane.showMessageDialog(this, "Saved:\nPet: " + petName + "\nAge: " + age );
-        dispose(); // Close dialog
+    private void updateData() {
+        try {
+            final String petName = petNameField.getText();
+            ageField.getInputVerifier().verify(ageField);
+            final int age = Integer.parseInt(ageField.getText());
+
+            final var client = getClient();
+            final PetUpdateDto petUpdateDto = PetUpdateDto.from(petName, age);
+            client.updatePet(petId, petUpdateDto);
+
+            updatePetDetails(petId, petUpdateDto);
+            dispose();
+            showMessageDialog(this, "Pet details Updated Successfully");
+        } catch (final Exception e) {
+            showMessageDialog(this, e.getMessage(), "Error Occurred", ERROR_MESSAGE);
+        } finally {
+            dispose();
+        }
     }
 }

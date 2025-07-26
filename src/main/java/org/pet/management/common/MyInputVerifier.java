@@ -5,6 +5,7 @@ import lombok.Getter;
 import javax.swing.*;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static org.pet.management.config.AppConfig.getProp;
@@ -14,6 +15,9 @@ public class MyInputVerifier {
     private static final String validNameRegex = getProp("valid.name.regexp");
     private static final int minNameLength = parseInt(getProp("min.name.length"));
     private static final int maxNameLength = parseInt(getProp("max.name.length"));
+    private static final int petMaxAge = parseInt(getProp("pet.max.age"));
+    private static final String validPhoneNumberRegex = getProp("valid.phone.regexp");
+
     @Getter
     public static InputVerifier notEmpty = new InputVerifier() {
         public boolean verify(JComponent input) {
@@ -65,10 +69,10 @@ public class MyInputVerifier {
         @Override
         public boolean verify(final JComponent input) {
             final String text = ((JTextField) input).getText().trim();
-            if (text.length() >= minNameLength && text.length() <= maxNameLength) {
+            if (text.length() < minNameLength || text.length() > maxNameLength) {
                 JOptionPane.showMessageDialog(
                         input,
-                        String.format("%s length be between %s and %s", input.getName(), minNameLength, maxNameLength),
+                        format("%s length be between %s and %s", input.getName(), minNameLength, maxNameLength),
                         "Invalid " + input.getName(),
                         ERROR_MESSAGE
                 );
@@ -78,4 +82,39 @@ public class MyInputVerifier {
         }
     };
 
+    @Getter
+    public static InputVerifier validateMaxAge = new InputVerifier() {
+        @Override
+        public boolean verify(final JComponent input) {
+            final String text = ((JTextField) input).getText().trim();
+            if (Integer.parseInt(text) > petMaxAge) {
+                JOptionPane.showMessageDialog(
+                        input,
+                        format("Age should be less than equal %s", petMaxAge),
+                        "Invalid " + input.getName(),
+                        ERROR_MESSAGE
+                );
+                return false;
+            }
+            return true;
+        }
+    };
+
+    @Getter
+    public static InputVerifier validPhoneNumber = new InputVerifier() {
+        @Override
+        public boolean verify(JComponent input) {
+            final String text = ((JTextField) input).getText().trim();
+            if (!text.matches(validPhoneNumberRegex)) {
+                JOptionPane.showMessageDialog(
+                        input,
+                        "Please enter a valid phone number",
+                        "Invalid " + input.getName(),
+                        ERROR_MESSAGE
+                );
+                return false;
+            }
+            return true;
+        }
+    };
 }

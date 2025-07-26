@@ -3,7 +3,7 @@ package org.pet.management.edit;
 import javax.swing.*;
 import java.awt.*;
 
-import static org.pet.management.petlist.PetListFrame.getPetDetails;
+import static org.pet.management.pet.PetListFrame.getPetDetails;
 
 public class UpdateVaccineDialog extends JDialog {
     private final JTextField petNameField;

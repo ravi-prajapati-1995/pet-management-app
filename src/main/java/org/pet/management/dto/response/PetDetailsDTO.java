@@ -1,4 +1,4 @@
-package org.pet.management.petlist.dto;
+package org.pet.management.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import javax.swing.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class PetDetailsDTO {
     private int id;
     private String name;

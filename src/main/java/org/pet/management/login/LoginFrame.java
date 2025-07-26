@@ -1,12 +1,16 @@
 package org.pet.management.login;
 
 import lombok.extern.slf4j.Slf4j;
-import org.pet.management.petlist.PetListFrame;
-import org.pet.management.login.dto.LoginResponseDTO;
+import org.pet.management.dto.response.LoginResponseDTO;
+import org.pet.management.pet.PetListFrame;
 import org.pet.management.util.PetAppClient;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static org.pet.management.util.LoadingUtils.hideLoadingIcon;
+import static org.pet.management.util.LoadingUtils.showLoadingIcon;
 
 @Slf4j
 public class LoginFrame extends JFrame {
@@ -15,7 +19,6 @@ public class LoginFrame extends JFrame {
     private JButton loginButton;
 
     public LoginFrame() {
-        log.debug("log is working correctrl");
         setTitle("Pet Management Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(300, 150);
@@ -25,10 +28,12 @@ public class LoginFrame extends JFrame {
 
         panel.add(new JLabel("Username:"));
         usernameField = new JTextField();
+        usernameField.setName("User Name");
         panel.add(usernameField);
 
         panel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
+        passwordField.setName("Password");
         panel.add(passwordField);
 
         loginButton = new JButton("Login");
@@ -41,21 +46,26 @@ public class LoginFrame extends JFrame {
     }
 
     private void performLogin() {
-        final String username = usernameField.getText();
-        final String password = new String(passwordField.getPassword());
+        log.debug("performing login");
+
+        final String username = usernameField.getText().trim();
+        final String password = new String(passwordField.getPassword()).trim();
+        if(username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        showLoadingIcon(this);
 
         final PetAppClient client = PetAppClient.getClient();
         final LoginResponseDTO login = client.login(username, password);
         if (login.isLoggedIn()) {
-            JOptionPane.showMessageDialog(this, "Login successful!");
-
             final PetListFrame petListFrame = new PetListFrame();
             petListFrame.setVisible(true);
-
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", ERROR_MESSAGE);
         }
+        hideLoadingIcon(this);
     }
-
 }

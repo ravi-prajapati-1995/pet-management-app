@@ -1,4 +1,4 @@
-package org.pet.management.login.dto;
+package org.pet.management.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
