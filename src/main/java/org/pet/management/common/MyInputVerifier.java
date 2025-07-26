@@ -63,7 +63,7 @@ public class MyInputVerifier {
     @Getter
     public static InputVerifier validNameLength = new InputVerifier() {
         @Override
-        public boolean verify(JComponent input) {
+        public boolean verify(final JComponent input) {
             final String text = ((JTextField) input).getText().trim();
             if (text.length() >= minNameLength && text.length() <= maxNameLength) {
                 JOptionPane.showMessageDialog(
