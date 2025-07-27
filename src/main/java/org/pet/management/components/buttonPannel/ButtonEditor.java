@@ -77,21 +77,21 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
 
     private void openPetEditFrame(final int row) {
         log.debug("Clicked edit pet for row number: {}", row);
-        final var petId = (int) table.getValueAt(row, 0);
+        final var petId = (Long) table.getValueAt(row, 0);
         final var dialog = new EditPetInfoDialog(petListFrame, petId);
         dialog.setVisible(true);
     }
 
     private void openOwnerEditDialog(final int row) {
         log.debug("Clicked edit owner for row number: {}", row);
-        final var petId = (int) table.getValueAt(row, 0);
+        final var petId = (Long) table.getValueAt(row, 0);
         final var dialog = new EditOwnerDialog(petListFrame, petId);
         dialog.setVisible(true);
     }
 
     private void openVaccineEditor(final int row) {
         log.debug("Clicked edit vaccine for row number: {}", row);
-        final var petId = (int) table.getValueAt(row, 0);
+        final var petId = (Long) table.getValueAt(row, 0);
         final var dialog = new EditVaccineDialog(petListFrame, (long) petId);
         dialog.setVisible(true);
     }

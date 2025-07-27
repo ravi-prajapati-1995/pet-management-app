@@ -12,7 +12,7 @@ public class UpdateVaccineDialog extends JDialog {
     private final JTextField ownerNameField;
     private final JTextField ownerPhoneField;
 
-    public UpdateVaccineDialog(final JFrame parent, final int petId) {
+    public UpdateVaccineDialog(final JFrame parent, final Long petId) {
         super(parent, "Edit Pet Details", true); // modal dialog
 
         final var petDetailsDTO = getPetDetails(petId);

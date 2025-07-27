@@ -13,11 +13,13 @@ import org.pet.management.dto.request.OwnerUpdateDTO;
 import org.pet.management.dto.request.PetUpdateDto;
 import org.pet.management.dto.response.LoginResponseDTO;
 import org.pet.management.dto.response.PetDetailsDTO;
+import org.pet.management.dto.response.VaccineDTO;
 import org.pet.management.exception.ApiCallException;
 import org.pet.management.exception.TokenExpiredException;
 import org.pet.management.listeners.SessionListener;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -28,6 +30,7 @@ import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.nonNull;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static org.pet.management.dto.response.LoginResponseDTO.loginFail;
 import static org.pet.management.util.HttpStatusCode.UNAUTHORIZED;
 import static org.pet.management.util.JsonUtil.asJsonString;
@@ -43,6 +46,7 @@ public class PetAppClient {
     private static String SEARCH_PET_URL;
     private static String UPDATE_PET_URL;
     private static String UPDATE_OWNER_URL;
+    private static String VACCINE_RESOURCE_URL;
     private static PetAppClient petAppClient;
     private final RestEndpointConfiguration configuration;
     private final SessionListener sessionListener;
@@ -68,6 +72,7 @@ public class PetAppClient {
         SEARCH_PET_URL = format("%s/pets/search?name={name}", endpointConfiguration.getBaseUrl());
         UPDATE_PET_URL = format("%s/pets/{id}", endpointConfiguration.getBaseUrl());
         UPDATE_OWNER_URL = format("%s/owner/{id}", endpointConfiguration.getBaseUrl());
+        VACCINE_RESOURCE_URL = format("%s/pet/{id}/vaccine", endpointConfiguration.getBaseUrl());
         return petAppClient;
     }
 
@@ -91,7 +96,7 @@ public class PetAppClient {
             }
         } catch (final Exception e) {
             log.error("Error while Login: {} error: {}", username, e.getMessage(), e);
-            return loginFail(e.getMessage());
+            return loginFail("Invalid Username or Password");
         }
     }
 
@@ -109,7 +114,7 @@ public class PetAppClient {
         });
     }
 
-    public void updatePet(final int id, final PetUpdateDto petUpdateDto) {
+    public void updatePet(final Long id, final PetUpdateDto petUpdateDto) {
         final var jsonString = asJsonString(petUpdateDto);
         final var updatePetUrl = UPDATE_PET_URL.replace("{id}", String.valueOf(id));
         final var patchRequest = createPatchRequest(
@@ -143,6 +148,19 @@ public class PetAppClient {
             }
 
             if (response.code() == UNAUTHORIZED) {
+                if(configuration.getToken() != null ) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Token Expired! Please login again",
+                            "Token Expired",
+                            ERROR_MESSAGE
+                    );
+
+                    final JFrame currentFrame = (JFrame) KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+                    currentFrame.dispose();
+                    configuration.setToken(null);
+                    new LoginFrame().setVisible(true);
+                }
                 throw new TokenExpiredException("Unauthorized access! Please login again");
             } else {
                 throw new ApiCallException(response.code(), response.message());
@@ -182,6 +200,14 @@ public class PetAppClient {
         return new Request.Builder().url(endPoint).headers(headers).get().build();
     }
 
+    private Request createPutRequest(final String endPoint, final String body, final Headers headers) {
+        return new Request.Builder()
+                .url(endPoint)
+                .headers(headers)
+                .put(RequestBody.create(body.getBytes(UTF_8)))
+                .build();
+    }
+
     private Headers mapToHeaders(final String token, final Map<String, String> headers) {
         final var builder = new Headers.Builder();
         Optional.ofNullable(token).map(t -> builder.set(AUTHORIZATION, getBearerToken(token)));
@@ -195,12 +221,28 @@ public class PetAppClient {
         return java.lang.String.join(SPACE_DELIMITER, "Bearer", token);
     }
 
-    public void updateOwner(final int ownerId, final OwnerUpdateDTO ownerUpdateDTO) {
+    public void updateOwner(final Long ownerId, final OwnerUpdateDTO ownerUpdateDTO) {
         final var jsonString = asJsonString(ownerUpdateDTO);
         final var updatePetUrl = UPDATE_OWNER_URL.replace("{id}", String.valueOf(ownerId));
         final var patchRequest =
                 createPatchRequest(updatePetUrl, jsonString, mapToHeaders(configuration.getToken(), emptyMap()));
         newcall(patchRequest, new TypeReference<Void>() {
         });
+    }
+
+    public List<VaccineDTO> getVaccineByPet(final Long petId) {
+        final var searchURL = VACCINE_RESOURCE_URL.replace("{id}", petId.toString());
+        final var getRequest = createGetRequest(searchURL, mapToHeaders(configuration.getToken(), emptyMap()));
+        return newcall(getRequest, new TypeReference<>() {
+        });
+    }
+
+    public void updateVaccineData(final Long petId, final String jsonString) {
+        final var searchURL = VACCINE_RESOURCE_URL.replace("{id}", petId.toString());
+        final var getRequest = createPutRequest(searchURL, jsonString, mapToHeaders(
+                configuration.getToken(),
+                emptyMap()
+        ));
+        newcall(getRequest, new TypeReference<Void>() {});
     }
 }

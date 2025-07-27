@@ -6,12 +6,15 @@ import org.pet.management.components.buttonPannel.ButtonRenderer;
 import org.pet.management.dto.request.OwnerUpdateDTO;
 import org.pet.management.dto.request.PetUpdateDto;
 import org.pet.management.dto.response.PetDetailsDTO;
+import org.pet.management.util.DateTimeUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,7 +30,7 @@ public class PetListFrame extends JFrame {
     private final JTextField searchField;
     private final JTable petTable;
     private final DefaultTableModel tableModel;
-    private static Map<Integer, PetDetailsDTO> petDetailsByIdMap;
+    private static Map<Long, PetDetailsDTO> petDetailsByIdMap;
     private static PetListFrame FRAME_REFERENCE;
 
     public PetListFrame() {
@@ -71,7 +74,7 @@ public class PetListFrame extends JFrame {
         FRAME_REFERENCE = this;
     }
 
-    public static void updatePetDetails(final int petId, final PetUpdateDto petUpdateDto) {
+    public static void updatePetDetails(final Long petId, final PetUpdateDto petUpdateDto) {
         final var petDetailsDTO = petDetailsByIdMap.get(petId);
         final var updatePetDetailsDTO = petDetailsDTO.toBuilder()
                 .name(petUpdateDto.getName())
@@ -81,13 +84,23 @@ public class PetListFrame extends JFrame {
         FRAME_REFERENCE.reRenderPetData();
     }
 
-    public static void updateOwnerDetails(final int ownerId, final OwnerUpdateDTO ownerUpdateDTO) {
+    public static void updateOwnerDetails(final Long ownerId, final OwnerUpdateDTO ownerUpdateDTO) {
         final var needToBeUpdateRecords = petDetailsByIdMap.values()
                 .stream()
-                .filter(dto -> dto.getOwnerId() == ownerId)
+                .filter(dto -> Objects.equals(dto.getOwnerId(), ownerId))
                 .map(dto -> getUpdatedPetDetailsDTO(ownerUpdateDTO, dto))
                 .collect(Collectors.toMap(PetDetailsDTO::getId, Function.identity()));
         petDetailsByIdMap.putAll(needToBeUpdateRecords);
+
+        FRAME_REFERENCE.reRenderPetData();
+    }
+
+    public static void updateVaccineInfo(final Long petId, final LocalDateTime lastVaccineTime) {
+        final var needToBeUpdateRecords = petDetailsByIdMap.get(petId);
+        final var updatedPetDetailsDTO = needToBeUpdateRecords.toBuilder()
+                .lastVaccine(DateTimeUtils.toString(lastVaccineTime))
+                .build();
+        petDetailsByIdMap.put(petId, updatedPetDetailsDTO);
 
         FRAME_REFERENCE.reRenderPetData();
     }
@@ -141,7 +154,7 @@ public class PetListFrame extends JFrame {
         petDetailsByIdMap.values().forEach(dto -> tableModel.addRow(toArray(dto)));
     }
 
-    public static PetDetailsDTO getPetDetails(final int id) {
+    public static PetDetailsDTO getPetDetails(final Long id) {
         return petDetailsByIdMap.get(id);
     }
 }

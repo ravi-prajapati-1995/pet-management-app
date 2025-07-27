@@ -13,10 +13,10 @@ import javax.swing.*;
 @Getter
 @Builder(toBuilder = true)
 public class PetDetailsDTO {
-    private int id;
+    private Long id;
     private String name;
     private int age;
-    private int ownerId;
+    private Long ownerId;
     private String owner;
     private String lastVaccine;
     private String phoneNumber;
@@ -34,7 +34,7 @@ public class PetDetailsDTO {
 
     public static PetDetailsDTO from(final JTable table, final int row) {
        return PetDetailsDTO.builder()
-                .id((int) table.getValueAt(row, 0))
+                .id((Long) table.getValueAt(row, 0))
                 .name((String) table.getValueAt(row, 1))
                 .age((int) table.getValueAt(row, 2))
                 .lastVaccine((String) table.getValueAt(row, 3))

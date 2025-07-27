@@ -18,9 +18,9 @@ import static org.pet.management.util.PetAppClient.getClient;
 public class EditOwnerDialog extends JDialog {
     private final JTextField ownerNameField;
     private final JTextField ownerPhoneField;
-    private final int ownerId;
+    private final Long ownerId;
 
-    public EditOwnerDialog(final JFrame parent, final int petId) {
+    public EditOwnerDialog(final JFrame parent, final Long petId) {
         super(parent, "Edit Pet Details", true); // modal dialog
         final var petDetailsDTO = getPetDetails(petId);
         this.ownerId = petDetailsDTO.getOwnerId();

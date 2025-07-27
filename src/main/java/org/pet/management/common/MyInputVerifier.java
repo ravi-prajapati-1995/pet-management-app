@@ -1,8 +1,11 @@
 package org.pet.management.common;
 
 import lombok.Getter;
+import org.pet.management.util.DateTimeUtils;
 
 import javax.swing.*;
+
+import java.time.LocalDateTime;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
@@ -17,6 +20,7 @@ public class MyInputVerifier {
     private static final int maxNameLength = parseInt(getProp("max.name.length"));
     private static final int petMaxAge = parseInt(getProp("pet.max.age"));
     private static final String validPhoneNumberRegex = getProp("valid.phone.regexp");
+    private static final String validDateTimeRegex = getProp("valid.date.format.regexp");
 
     @Getter
     public static InputVerifier notEmpty = new InputVerifier() {
@@ -109,6 +113,42 @@ public class MyInputVerifier {
                 JOptionPane.showMessageDialog(
                         input,
                         "Please enter a valid phone number",
+                        "Invalid " + input.getName(),
+                        ERROR_MESSAGE
+                );
+                return false;
+            }
+            return true;
+        }
+    };
+
+    @Getter
+    public static InputVerifier validDateTimeFormat = new InputVerifier() {
+        @Override
+        public boolean verify(final JComponent input) {
+            final var text = ((JTextField) input).getText().trim();
+            if (!text.matches(validDateTimeRegex)) {
+                JOptionPane.showMessageDialog(
+                        input,
+                        "Date should be in (yyyy-MM-dd HH:mm)",
+                        "Invalid " + input.getName(),
+                        ERROR_MESSAGE
+                );
+                return false;
+            }
+            return true;
+        }
+    };
+
+    @Getter
+    public static InputVerifier dateTimeInPast = new InputVerifier() {
+        @Override
+        public boolean verify(final JComponent input) {
+            final var text = ((JTextField) input).getText().trim();
+            if (DateTimeUtils.from(text).isAfter(LocalDateTime.now())) {
+                JOptionPane.showMessageDialog(
+                        input,
+                        "Date must be in past",
                         "Invalid " + input.getName(),
                         ERROR_MESSAGE
                 );

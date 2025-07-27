@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static org.pet.management.util.LoadingUtils.hideLoadingIcon;
 import static org.pet.management.util.LoadingUtils.showLoadingIcon;
 import static org.pet.management.util.UIUtils.RoundedBorder;
@@ -55,7 +56,7 @@ public final class LoginFrame extends JFrame {
             final var username = usernameField.getText().trim();
             final var password = new String(passwordField.getPassword()).trim();
             if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             showLoadingIcon(this);
@@ -66,11 +67,11 @@ public final class LoginFrame extends JFrame {
                 petListFrame.setVisible(true);
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, login.getErrorMessage(), "Error", ERROR_MESSAGE);
+                showMessageDialog(this, login.getErrorMessage(), "Error", ERROR_MESSAGE);
             }
         } catch (final Exception e) {
             log.error("error while login ", e);
-            JOptionPane.showMessageDialog(this, "Some error occurred ", "Error", ERROR_MESSAGE);
+            showMessageDialog(this, "Some error occurred ", "Error", ERROR_MESSAGE);
 
         } finally {
             hideLoadingIcon(this);
