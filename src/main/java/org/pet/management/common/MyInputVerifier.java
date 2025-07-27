@@ -20,8 +20,8 @@ public class MyInputVerifier {
 
     @Getter
     public static InputVerifier notEmpty = new InputVerifier() {
-        public boolean verify(JComponent input) {
-            final String text = ((JTextField) input).getText();
+        public boolean verify(final JComponent input) {
+            final var text = ((JTextField) input).getText();
             if (text != null && !text.trim().isEmpty()) {
                 return true;
             } else {
@@ -37,7 +37,7 @@ public class MyInputVerifier {
             try {
                 parseInt(((JTextField) input).getText());
                 return true;
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 showMessageDialog(input, input.getName() + "value must be integer only!", "Validation Error",
                         ERROR_MESSAGE
                 );
@@ -49,8 +49,8 @@ public class MyInputVerifier {
     @Getter
     public static InputVerifier validName = new InputVerifier() {
         @Override
-        public boolean verify(JComponent input) {
-            final String text = ((JTextField) input).getText().trim();
+        public boolean verify(final JComponent input) {
+            final var text = ((JTextField) input).getText().trim();
             if (!text.matches(validNameRegex)) {
                 JOptionPane.showMessageDialog(
                         input,
@@ -68,7 +68,7 @@ public class MyInputVerifier {
     public static InputVerifier validNameLength = new InputVerifier() {
         @Override
         public boolean verify(final JComponent input) {
-            final String text = ((JTextField) input).getText().trim();
+            final var text = ((JTextField) input).getText().trim();
             if (text.length() < minNameLength || text.length() > maxNameLength) {
                 JOptionPane.showMessageDialog(
                         input,
@@ -86,7 +86,7 @@ public class MyInputVerifier {
     public static InputVerifier validateMaxAge = new InputVerifier() {
         @Override
         public boolean verify(final JComponent input) {
-            final String text = ((JTextField) input).getText().trim();
+            final var text = ((JTextField) input).getText().trim();
             if (Integer.parseInt(text) > petMaxAge) {
                 JOptionPane.showMessageDialog(
                         input,
@@ -103,8 +103,8 @@ public class MyInputVerifier {
     @Getter
     public static InputVerifier validPhoneNumber = new InputVerifier() {
         @Override
-        public boolean verify(JComponent input) {
-            final String text = ((JTextField) input).getText().trim();
+        public boolean verify(final JComponent input) {
+            final var text = ((JTextField) input).getText().trim();
             if (!text.matches(validPhoneNumberRegex)) {
                 JOptionPane.showMessageDialog(
                         input,

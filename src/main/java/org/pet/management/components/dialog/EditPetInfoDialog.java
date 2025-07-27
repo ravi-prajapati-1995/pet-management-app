@@ -1,4 +1,4 @@
-package org.pet.management.edit;
+package org.pet.management.components.dialog;
 
 import org.pet.management.common.CompositeVerifier;
 import org.pet.management.dto.request.PetUpdateDto;
@@ -12,8 +12,8 @@ import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static org.pet.management.common.MyInputVerifier.*;
-import static org.pet.management.pet.PetListFrame.getPetDetails;
-import static org.pet.management.pet.PetListFrame.updatePetDetails;
+import static org.pet.management.components.frame.PetListFrame.getPetDetails;
+import static org.pet.management.components.frame.PetListFrame.updatePetDetails;
 import static org.pet.management.util.PetAppClient.getClient;
 
 public class EditPetInfoDialog extends JDialog {
@@ -21,7 +21,7 @@ public class EditPetInfoDialog extends JDialog {
     private final JTextField ageField;
     private final int petId;
 
-    public EditPetInfoDialog(JFrame parent, final int petId) {
+    public EditPetInfoDialog(final JFrame parent, final int petId) {
         super(parent, "Edit Pet Details", true); // modal dialog
         this.petId = petId;
         final var petDetailsDTO = getPetDetails(petId);
@@ -30,7 +30,7 @@ public class EditPetInfoDialog extends JDialog {
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        final JPanel panel = new JPanel(new GridLayout(6, 2, 8, 8));
+        final var panel = new JPanel(new GridLayout(6, 2, 8, 8));
         panel.setBorder(createEmptyBorder(10, 10, 10, 10));
 
         panel.add(new JLabel("Pet Name:"));
@@ -46,7 +46,7 @@ public class EditPetInfoDialog extends JDialog {
 
         panel.add(ageField);
 
-        final JButton saveButton = new JButton("Save");
+        final var saveButton = new JButton("Save");
         panel.add(new JLabel()); // empty label for spacing
         panel.add(saveButton);
         add(panel);
@@ -62,12 +62,12 @@ public class EditPetInfoDialog extends JDialog {
 
     private void updateData() {
         try {
-            final String petName = petNameField.getText();
+            final var petName = petNameField.getText();
             ageField.getInputVerifier().verify(ageField);
-            final int age = Integer.parseInt(ageField.getText());
+            final var age = Integer.parseInt(ageField.getText());
 
             final var client = getClient();
-            final PetUpdateDto petUpdateDto = PetUpdateDto.from(petName, age);
+            final var petUpdateDto = PetUpdateDto.from(petName, age);
             client.updatePet(petId, petUpdateDto);
 
             updatePetDetails(petId, petUpdateDto);

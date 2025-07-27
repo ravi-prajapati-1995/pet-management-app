@@ -1,9 +1,9 @@
-package org.pet.management.edit;
+package org.pet.management.components.dialog;
 
 import lombok.extern.slf4j.Slf4j;
 import org.pet.management.common.CompositeVerifier;
+import org.pet.management.components.frame.PetListFrame;
 import org.pet.management.dto.request.OwnerUpdateDTO;
-import org.pet.management.pet.PetListFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.awt.*;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static org.pet.management.common.MyInputVerifier.*;
-import static org.pet.management.pet.PetListFrame.getPetDetails;
+import static org.pet.management.components.frame.PetListFrame.getPetDetails;
 import static org.pet.management.util.PetAppClient.getClient;
 
 @Slf4j
@@ -20,7 +20,7 @@ public class EditOwnerDialog extends JDialog {
     private final JTextField ownerPhoneField;
     private final int ownerId;
 
-    public EditOwnerDialog(JFrame parent, final int petId) {
+    public EditOwnerDialog(final JFrame parent, final int petId) {
         super(parent, "Edit Pet Details", true); // modal dialog
         final var petDetailsDTO = getPetDetails(petId);
         this.ownerId = petDetailsDTO.getOwnerId();
@@ -29,7 +29,7 @@ public class EditOwnerDialog extends JDialog {
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        final JPanel panel = new JPanel(new GridLayout(6, 2, 8, 8));
+        final var panel = new JPanel(new GridLayout(6, 2, 8, 8));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         panel.add(new JLabel("Owner Name:"));
@@ -44,7 +44,7 @@ public class EditOwnerDialog extends JDialog {
         ownerPhoneField.setName("Phone Number");
         panel.add(ownerPhoneField);
 
-        final JButton saveButton = new JButton("Save");
+        final var saveButton = new JButton("Save");
         panel.add(new JLabel()); // empty label for spacing
         panel.add(saveButton);
 
@@ -54,7 +54,7 @@ public class EditOwnerDialog extends JDialog {
 
         // Focus petNameField on open
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent e) {
+            public void windowOpened(final java.awt.event.WindowEvent e) {
                 ownerNameField.requestFocusInWindow();
             }
         });
@@ -62,8 +62,8 @@ public class EditOwnerDialog extends JDialog {
 
     private void updateOwnerDetails() {
         try {
-            final String ownerName = ownerNameField.getText();
-            final String ownerPhone = ownerPhoneField.getText();
+            final var ownerName = ownerNameField.getText();
+            final var ownerPhone = ownerPhoneField.getText();
 
             final var client = getClient();
             final var ownerUpdateDTO = OwnerUpdateDTO.from(ownerName, ownerPhone);

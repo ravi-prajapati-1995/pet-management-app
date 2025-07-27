@@ -1,10 +1,10 @@
-package org.pet.management.edit.buttonPannel;
+package org.pet.management.components.buttonPannel;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.pet.management.edit.EditOwnerDialog;
-import org.pet.management.edit.EditPetInfoDialog;
-import org.pet.management.edit.UpdateVaccineDialog;
+import org.pet.management.components.dialog.EditOwnerDialog;
+import org.pet.management.components.dialog.EditPetInfoDialog;
+import org.pet.management.components.dialog.EditVaccineDialog;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -20,26 +20,26 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
     private boolean clicked;
     private int row;
     private JTable table;
-    private JFrame petListFrame;
+    private final JFrame petListFrame;
     private final JPanel panel = new JPanel(new FlowLayout(CENTER, 5, 0));
 
 
     public ButtonEditor(final JCheckBox checkBox, final JFrame petListFrame) {
         panel.setPreferredSize(new Dimension(300, 40));
         panel.setLayout(new FlowLayout(LEFT, 10, 5));
-        final Dimension buttonSize = new Dimension(20, 20);
+        final var buttonSize = new Dimension(20, 20);
 
-        final JButton petEditButton = new JButton(getIcon("pet.edit.icon"));
+        final var petEditButton = new JButton(getIcon("pet.edit.icon"));
         petEditButton.setPreferredSize(buttonSize);
         petEditButton.setToolTipText("Edit Pet");
         panel.add(petEditButton);
 
-        final JButton ownerEditButton = new JButton(getIcon("owner.edit.icon"));
+        final var ownerEditButton = new JButton(getIcon("owner.edit.icon"));
         ownerEditButton.setPreferredSize(buttonSize);
         ownerEditButton.setToolTipText("Edit Owner");
         panel.add(ownerEditButton);
 
-        final JButton vaccineEditButton = new JButton(getIcon("vaccine.edit.icon"));
+        final var vaccineEditButton = new JButton(getIcon("vaccine.edit.icon"));
         vaccineEditButton.setPreferredSize(buttonSize);
         vaccineEditButton.setToolTipText("Edit Vaccine info");
 
@@ -55,6 +55,7 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
         });
         vaccineEditButton.addActionListener(e -> {
             log.debug("Clicked on the vaccine button");
+            openVaccineEditor(row);
         });
 
         this.petListFrame = petListFrame;
@@ -75,23 +76,23 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
     }
 
     private void openPetEditFrame(final int row) {
-        log.debug("Clicked edit button for row number: {}", row);
+        log.debug("Clicked edit pet for row number: {}", row);
         final var petId = (int) table.getValueAt(row, 0);
-        final EditPetInfoDialog dialog = new EditPetInfoDialog(petListFrame, petId);
+        final var dialog = new EditPetInfoDialog(petListFrame, petId);
         dialog.setVisible(true);
     }
 
     private void openOwnerEditDialog(final int row) {
-        log.debug("Clicked edit button for row number: {}", row);
+        log.debug("Clicked edit owner for row number: {}", row);
         final var petId = (int) table.getValueAt(row, 0);
-        final EditOwnerDialog dialog = new EditOwnerDialog(petListFrame, petId);
+        final var dialog = new EditOwnerDialog(petListFrame, petId);
         dialog.setVisible(true);
     }
 
     private void openVaccineEditor(final int row) {
-        log.debug("Clicked edit button for row number: {}", row);
+        log.debug("Clicked edit vaccine for row number: {}", row);
         final var petId = (int) table.getValueAt(row, 0);
-        final UpdateVaccineDialog dialog = new UpdateVaccineDialog(petListFrame, petId);
+        final var dialog = new EditVaccineDialog(petListFrame, (long) petId);
         dialog.setVisible(true);
     }
 
@@ -108,8 +109,8 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
 
     @NotNull
     private ImageIcon getIcon(final String key) {
-        final ImageIcon originalIcon = new ImageIcon(getClass().getResource(getProp(key)));
-        final Image scaledImage = originalIcon.getImage().getScaledInstance(20, 20, SCALE_SMOOTH);
+        final var originalIcon = new ImageIcon(getClass().getResource(getProp(key)));
+        final var scaledImage = originalIcon.getImage().getScaledInstance(20, 20, SCALE_SMOOTH);
         return new ImageIcon(scaledImage);
     }
 }

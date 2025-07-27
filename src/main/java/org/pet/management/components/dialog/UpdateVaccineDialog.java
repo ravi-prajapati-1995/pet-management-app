@@ -1,9 +1,9 @@
-package org.pet.management.edit;
+package org.pet.management.components.dialog;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static org.pet.management.pet.PetListFrame.getPetDetails;
+import static org.pet.management.components.frame.PetListFrame.getPetDetails;
 
 public class UpdateVaccineDialog extends JDialog {
     private final JTextField petNameField;
@@ -12,7 +12,7 @@ public class UpdateVaccineDialog extends JDialog {
     private final JTextField ownerNameField;
     private final JTextField ownerPhoneField;
 
-    public UpdateVaccineDialog(JFrame parent, final int petId) {
+    public UpdateVaccineDialog(final JFrame parent, final int petId) {
         super(parent, "Edit Pet Details", true); // modal dialog
 
         final var petDetailsDTO = getPetDetails(petId);
@@ -21,7 +21,7 @@ public class UpdateVaccineDialog extends JDialog {
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        final JPanel panel = new JPanel(new GridLayout(6, 2, 8, 8));
+        final var panel = new JPanel(new GridLayout(6, 2, 8, 8));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         panel.add(new JLabel("Pet Name:"));
@@ -44,7 +44,7 @@ public class UpdateVaccineDialog extends JDialog {
         ownerPhoneField = new JTextField(petDetailsDTO.getPhoneNumber());
         panel.add(ownerPhoneField);
 
-        JButton saveButton = new JButton("Save");
+        final var saveButton = new JButton("Save");
         panel.add(new JLabel()); // empty label for spacing
         panel.add(saveButton);
 
@@ -54,18 +54,18 @@ public class UpdateVaccineDialog extends JDialog {
 
         // Focus petNameField on open
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent e) {
+            public void windowOpened(final java.awt.event.WindowEvent e) {
                 petNameField.requestFocusInWindow();
             }
         });
     }
 
     private void saveData() {
-        final String petName = petNameField.getText();
-        final int age = Integer.parseInt(ageField.getText());
-        final String lastVaccination = lastVaccinationField.getText();
-        final String ownerName = ownerNameField.getText();
-        final String ownerPhone = ownerPhoneField.getText();
+        final var petName = petNameField.getText();
+        final var age = Integer.parseInt(ageField.getText());
+        final var lastVaccination = lastVaccinationField.getText();
+        final var ownerName = ownerNameField.getText();
+        final var ownerPhone = ownerPhoneField.getText();
 
         JOptionPane.showMessageDialog(this, "Saved:\nPet: " + petName + "\nAge: " + age +
                 "\nLast Vaccination: " + lastVaccination +

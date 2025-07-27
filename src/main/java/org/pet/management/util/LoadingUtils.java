@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoadingUtils {
-    private static JPanel glass ;
+    private static final JPanel glass ;
 
 
     static {
-        JProgressBar progressBar = new JProgressBar();
+        final var progressBar = new JProgressBar();
         progressBar.setIndeterminate(true); // spinner style
         progressBar.setString("Loading...");
         progressBar.setStringPainted(true);

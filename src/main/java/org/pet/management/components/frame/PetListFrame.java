@@ -1,14 +1,15 @@
-package org.pet.management.pet;
+package org.pet.management.components.frame;
 
 import lombok.Getter;
+import org.pet.management.components.buttonPannel.ButtonEditor;
+import org.pet.management.components.buttonPannel.ButtonRenderer;
 import org.pet.management.dto.request.OwnerUpdateDTO;
 import org.pet.management.dto.request.PetUpdateDto;
 import org.pet.management.dto.response.PetDetailsDTO;
-import org.pet.management.edit.buttonPannel.ButtonEditor;
-import org.pet.management.edit.buttonPannel.ButtonRenderer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,15 +36,16 @@ public class PetListFrame extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        final JPanel topPanel = new JPanel();
+        final var topPanel = new JPanel();
         searchField = new JTextField(20);
-        final JButton searchButton = new JButton("Search");
+        final var searchButton = new JButton("Search");
         topPanel.add(new JLabel("Search by Pet Name:"));
         topPanel.add(searchField);
         topPanel.add(searchButton);
 
         // Table setup
-        final String[] columns = {"id", "Pet Name", "Age", "Last Vaccination", "Owner Name", "Owner Telephone", "Edit"};
+        final var columns =
+                new String[]{"id", "Pet Name", "Age", "Last Vaccination", "Owner Name", "Owner Telephone", "Edit"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(final int row, final int column) {
@@ -55,7 +57,12 @@ public class PetListFrame extends JFrame {
 
         addEditButton();
         add(topPanel, NORTH);
-        add(new JScrollPane(petTable), CENTER);
+
+        final var panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
+        panel.add(new JScrollPane(petTable), CENTER);
+
+        add(panel);
         hideIdColumn();
         loadData();
 
@@ -65,8 +72,8 @@ public class PetListFrame extends JFrame {
     }
 
     public static void updatePetDetails(final int petId, final PetUpdateDto petUpdateDto) {
-        final PetDetailsDTO petDetailsDTO = petDetailsByIdMap.get(petId);
-        final PetDetailsDTO updatePetDetailsDTO = petDetailsDTO.toBuilder()
+        final var petDetailsDTO = petDetailsByIdMap.get(petId);
+        final var updatePetDetailsDTO = petDetailsDTO.toBuilder()
                 .name(petUpdateDto.getName())
                 .age(petUpdateDto.getAge())
                 .build();
@@ -109,7 +116,7 @@ public class PetListFrame extends JFrame {
 
     private void loadData() {
         final var client = getClient();
-        final List<PetDetailsDTO> petList = client.getPetList();
+        final var petList = client.getPetList();
         saveDataLocally(petList);
         petList.forEach(dto -> tableModel.addRow(toArray(dto)));
     }
@@ -122,9 +129,9 @@ public class PetListFrame extends JFrame {
     private void searchPets() {
         tableModel.setRowCount(0);
 
-        final String searchText = searchField.getText().trim().toLowerCase();
+        final var searchText = searchField.getText().trim().toLowerCase();
         final var client = getClient();
-        final List<PetDetailsDTO> petList = client.searchByName(searchText);
+        final var petList = client.searchByName(searchText);
         saveDataLocally(petList);
         petList.forEach(dto -> tableModel.addRow(toArray(dto)));
     }
@@ -132,7 +139,6 @@ public class PetListFrame extends JFrame {
     private void reRenderPetData() {
         tableModel.setRowCount(0);
         petDetailsByIdMap.values().forEach(dto -> tableModel.addRow(toArray(dto)));
-
     }
 
     public static PetDetailsDTO getPetDetails(final int id) {

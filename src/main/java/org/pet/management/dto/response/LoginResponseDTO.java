@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class LoginResponseDTO {
+public final class LoginResponseDTO {
     private boolean isLoggedIn;
     private String token;
     private String errorMessage;
