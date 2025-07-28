@@ -19,7 +19,6 @@ import org.pet.management.exception.TokenExpiredException;
 import org.pet.management.listeners.SessionListener;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -32,6 +31,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Objects.nonNull;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static org.pet.management.dto.response.LoginResponseDTO.loginFail;
+import static org.pet.management.util.HttpStatusCode.INTERNAL_SERVER_ERROR;
 import static org.pet.management.util.HttpStatusCode.UNAUTHORIZED;
 import static org.pet.management.util.JsonUtil.asJsonString;
 
@@ -148,20 +148,11 @@ public class PetAppClient {
             }
 
             if (response.code() == UNAUTHORIZED) {
-                if(configuration.getToken() != null ) {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Token Expired! Please login again",
-                            "Token Expired",
-                            ERROR_MESSAGE
-                    );
-
-                    final JFrame currentFrame = (JFrame) KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
-                    currentFrame.dispose();
-                    configuration.setToken(null);
-                    new LoginFrame().setVisible(true);
-                }
+                handleUnauthorized();
                 throw new TokenExpiredException("Unauthorized access! Please login again");
+            } else if(response.code() == INTERNAL_SERVER_ERROR) {
+                handleServerError(response);
+                throw new TokenExpiredException(response.message());
             } else {
                 throw new ApiCallException(response.code(), response.message());
             }
@@ -170,6 +161,28 @@ public class PetAppClient {
             log.error("Error while making call to server {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    private void handleUnauthorized() throws TokenExpiredException {
+        if(configuration.getToken() != null ) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Token Expired! Please relaunch app",
+                    "Token Expired",
+                    ERROR_MESSAGE
+            );
+
+            configuration.setToken(null);
+        }
+    }
+
+    private static void handleServerError(final Response response) throws TokenExpiredException {
+        JOptionPane.showMessageDialog(
+                null,
+                "Some error occurred! Please contact Admin",
+                "Server Error",
+                ERROR_MESSAGE
+        );
     }
 
     private <T> T parseResponse(final Response response, final TypeReference<T> type) {

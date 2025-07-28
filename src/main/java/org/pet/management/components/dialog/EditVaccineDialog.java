@@ -89,6 +89,7 @@ public final class EditVaccineDialog extends JDialog {
         getClient().updateVaccineData(petId, jsonString);
         PetListFrame.updateVaccineInfo(petId, latestVaccineTime);
         dispose();
+        showMessageDialog(this, "Vaccine details Updated Successfully");
     }
 
     private void addNewVaccine(final VaccineTableModel model) {

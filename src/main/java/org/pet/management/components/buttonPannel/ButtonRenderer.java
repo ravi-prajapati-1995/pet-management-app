@@ -16,7 +16,6 @@ import static org.pet.management.config.AppConfig.getProp;
 public class ButtonRenderer extends JPanel implements TableCellRenderer {
     public ButtonRenderer() {
         ToolTipManager.sharedInstance().setInitialDelay(1);
-        log.debug("log is working correctrl");
         setLayout(new FlowLayout(LEFT, 10, 5));
         final var buttonSize = new Dimension(20, 20);
 

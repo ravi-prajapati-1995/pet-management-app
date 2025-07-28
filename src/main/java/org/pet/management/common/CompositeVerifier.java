@@ -17,7 +17,6 @@ public class CompositeVerifier extends InputVerifier {
 
     @Override
     public boolean verify(final JComponent input) {
-        log.debug("Verifying component for input: {}", input);
         for (final var v : verifiers) {
             if (!v.verify(input)) {
                 return false;
