@@ -112,7 +112,7 @@ public class MyInputVerifier {
             if (!text.matches(validPhoneNumberRegex)) {
                 JOptionPane.showMessageDialog(
                         input,
-                        "Please enter a valid phone number",
+                        "Please enter a valid phone number.e.g. +919876543210/+447123456789",
                         "Invalid " + input.getName(),
                         ERROR_MESSAGE
                 );
@@ -145,10 +145,20 @@ public class MyInputVerifier {
         @Override
         public boolean verify(final JComponent input) {
             final var text = ((JTextField) input).getText().trim();
-            if (DateTimeUtils.from(text).isAfter(LocalDateTime.now())) {
+            try {
+                if (DateTimeUtils.from(text).isAfter(LocalDateTime.now())) {
+                    JOptionPane.showMessageDialog(
+                            input,
+                            "Date must be in past",
+                            "Invalid " + input.getName(),
+                            ERROR_MESSAGE
+                    );
+                    return false;
+                }
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(
                         input,
-                        "Date must be in past",
+                        "Date is not valid",
                         "Invalid " + input.getName(),
                         ERROR_MESSAGE
                 );
